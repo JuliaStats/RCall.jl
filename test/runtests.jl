@@ -2,19 +2,16 @@ using Test
 
 hd = homedir()
 
-if Sys.iswindows()
-    Rhome = if haskey(ENV,"R_HOME")
-        ENV["R_HOME"]
-    else
-        using WinReg
-        WinReg.querykey(WinReg.HKEY_LOCAL_MACHINE, "Software\\R-Core\\R","InstallPath")
-    end
-    Rscript = joinpath(Rhome,"bin",Sys.WORD_SIZE==64 ? "x64" : "i386", "Rscript")
-else
-    Rscript = "Rscript"
-end
+include("../deps/deps.jl")
 
-libpaths = readlines(`$Rscript -e "writeLines(.libPaths())"`)
+if Sys.iswindows()    
+    libpaths = withenv("PATH" => join(vcat(ENV["PATH"], PATH_append), ';')) do
+        readlines(`Rscript -e "writeLines(.libPaths())"`)
+    end
+else
+    Rscript = joinpath(Rhome, "bin", "Rscript")
+    libpaths = readlines(`$Rscript -e "writeLines(.libPaths())"`)
+end   
 
 using RCall
 using Missings
@@ -51,4 +48,4 @@ for t in tests
     include(tfile)
 end
 
-@test unsafe_load(cglobal((:R_PPStackTop, RCall.libR), Int)) == 0
+@test unsafe_load(cglobal((:R_PPStackTop, RCall.libR), Cint)) == 0

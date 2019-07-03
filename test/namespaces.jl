@@ -6,11 +6,10 @@ module NamespaceTests
     using RCall
     using Test
 
-    @rimport MASS
-    @test rcopy(rcall(MASS.ginv, RObject([1 2; 0 4]))) ≈ [1 -0.5; 0 0.25]
-    @rimport MASS as mass
-    @test rcopy(rcall(mass.ginv, RObject([1 2; 0 4]))) ≈ [1 -0.5; 0 0.25]
-    @rlibrary MASS
-    @test rcopy(rcall(ginv, RObject([1 2; 0 4]))) ≈ [1 -0.5; 0 0.25]
-
+    @rimport stats
+    @test rcopy(stats.qbirthday()) == 23
+    @rimport stats as Rstats
+    @test rcopy(Rstats.qbirthday(coincident = 4)) == 187
+    @rlibrary stats
+    @test rcopy(pbirthday(23, coincident = 3)) ≈ 0.014415406155024258
 end

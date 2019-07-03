@@ -1,7 +1,11 @@
 environment:
   matrix:
   - julia_version: 1.0
+  - julia_version: 1.0
+    RCALL_CONDA: TRUE # test Conda
   - julia_version: 1.1
+  - julia_version: 1.1
+    RCALL_CONDA: TRUE # test Conda
   - julia_version: nightly
 
 platform:
@@ -9,6 +13,9 @@ platform:
   - x64 # 64-bit
 
 matrix:
+  exclude:
+    - platform: x86
+      RCALL_CONDA: TRUE
   allow_failures:
     - julia_version: nightly
 
@@ -27,9 +34,11 @@ install:
   - ps: iex ((new-object net.webclient).DownloadString("https://raw.githubusercontent.com/JuliaCI/Appveyor.jl/version-1/bin/install.ps1"))
 # Download and install R binary
   - ps: |
-      (new-object net.webclient).DownloadString("http://cran.rstudio.com/bin/windows/base/") -match 'href="(R-[0-9.]*[a-zA-Z]*-win.exe)"';
-      (new-object net.webclient).DownloadFile($("http://cran.rstudio.com/bin/windows/base/"+$matches[1]),"C:\projects\R-binary.exe")
-  - C:\projects\R-binary.exe /VERYSILENT /DIR=C:\projects\R
+      if( -Not(Test-Path env:RCALL_CONDA)) {
+        (new-object net.webclient).DownloadString("http://cran.rstudio.com/bin/windows/base/") -match 'href="(R-[0-9.]*[a-zA-Z]*-win.exe)"';
+        (new-object net.webclient).DownloadFile($("http://cran.rstudio.com/bin/windows/base/"+$matches[1]),"C:\projects\R-binary.exe")
+      }
+  - IF NOT DEFINED RCALL_CONDA (C:\projects\R-binary.exe /VERYSILENT /DIR=C:\projects\R)
 
 build_script:
   - echo "%JL_BUILD_SCRIPT%"

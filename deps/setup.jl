@@ -1,14 +1,14 @@
 using Libdl
 
 """
-    validate_libR(libR, raise=true)
+    validate_libR(libR; raise=true)
 
 Checks that the R library `libR` can be loaded and is satisfies version requirements.
 
 If `raise` is set to `false`, then returns a boolean indicating success rather
 than throwing exceptions.
 """
-function validate_libR(libR, raise=true)
+function validate_libR(libR; raise=true)
     if !isfile(libR)
         raise || return false
         error("Could not find library $libR. Make sure that R shared library exists.")
@@ -16,7 +16,9 @@ function validate_libR(libR, raise=true)
     # Issue #143
     # On linux, sometimes libraries linked from libR (e.g. libRblas.so) won't open unless LD_LIBRARY_PATH is set correctly.
     libptr = try
-        Libdl.dlopen(libR)
+        withenv("PATH" => join(vcat(ENV["PATH"], PATH_append), ';')) do
+            Libdl.dlopen(libR)
+        end
     catch er
         raise || return false
         Base.with_output_color(:red, stderr) do io
@@ -44,11 +46,11 @@ function validate_libR(libR, raise=true)
     return true
 end
 
-function locate_libR(Rhome, raise=true)
+function locate_libR(Rhome; raise=true)
     @static if Sys.iswindows()
         libR = joinpath(Rhome, "bin", Sys.WORD_SIZE==64 ? "x64" : "i386", "R.dll")
     else
         libR = joinpath(Rhome, "lib", "libR.$(Libdl.dlext)")
     end
-    return validate_libR(libR, raise) ? libR : ""
+    return validate_libR(libR; raise=raise) ? libR : ""
 end

@@ -1,8 +1,6 @@
 const Rembedded = Ref{Bool}(false)
 
 @static if Sys.iswindows()
-    import WinReg
-
     function ask_yes_no_cancel(prompt::Ptr{Cchar})
         println(String(prompt))
         query = readline(STDIN)
@@ -70,8 +68,11 @@ function initEmbeddedR()
         Ruser_ptr = ccall((:getRUser,libR),Ptr{Cchar},())
         Ruser = unsafe_string(Ruser_ptr)
 
-        ccall(:_wputenv,Cint,(Cwstring,),"PATH="*ENV["PATH"]*";"*dirname(libR))
-        ccall(:_wputenv,Cint,(Cwstring,),"R_USER="*Ruser)
+        # Need to use POSIX interface (instead of Win32 interface used by ENV)
+        # https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16382
+        ccall(:_wputenv,Cint,(Cwstring,),"PATH=$(ENV["PATH"]);$(join(PATH_append,';'))")
+        ccall(:_wputenv,Cint,(Cwstring,),"R_HOME=$Rhome")
+        ccall(:_wputenv,Cint,(Cwstring,),"R_USER=$Ruser")
 
         # otherwise R will set it itself, which can be wrong on Windows
         if !("HOME" in keys(ENV))

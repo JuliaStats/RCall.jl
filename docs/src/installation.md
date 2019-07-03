@@ -1,45 +1,31 @@
 # Installing RCall.jl
 
-RCall.jl can simply be installed with
-```julia
-Pkg.add("RCall")
-```
-
-RCall.jl will automatically install R for you using [Conda](https://github.com/JuliaPy/Conda.jl)
-if it doesn't detect that you have R 3.4.0 or later installed already.
+RCall.jl requires either a local R installation, or the `RCALL_CONDA` environment variable be set to `TRUE`. It can then be installed via [the Julia package manager](https://docs.julialang.org/en/v1/stdlib/Pkg/index.html).
 
 ## Customizing the R installation
 
-Before installing its own copy of R, the RCall build script (run by `Pkg.add`)
-will check for an existing R installation by looking in the following locations,
-in order.
+During package the package build, RCall.jl will check the following to find the location of the R installation:
 
-* The `R_HOME` environment variable, if set, should be the location of the
-  [R home directory](https://stat.ethz.ch/R-manual/R-devel/library/base/html/Rhome.html).
-* Otherwise, it runs the `R HOME` command, assuming `R` is located in your [`PATH`](https://en.wikipedia.org/wiki/PATH_(variable)).
-* Otherwise, on Windows, it looks in the [Windows registry](https://cran.r-project.org/bin/windows/base/rw-FAQ.html#Does-R-use-the-Registry_003f).
-* Otherwise, it installs the [`r-base` package](https://anaconda.org/r/r-base).
+1. `RCALL_CONDA` environment variable:  if set to `TRUE`, it will install the [`r-base` package](https://anaconda.org/r/r-base) via [Conda.jl](https://github.com/JuliaPy/Conda.jl).
+2. `R_HOME` environment variable.
+3. `R RHOME` command.
+4. Windows registry (Windows only)
 
-To change which R installation is used for RCall, set the `R_HOME` environment variable
-and run `Pkg.build("RCall")`.   Once this is configured, RCall remembers the location
-of R in future updates, so you don't need to set `R_HOME` permanently.
+To manually specify which R installation is used, the easiest option is to set the `R_HOME` environment variable
+and run `Pkg.build("RCall")`.
 
 You can set `R_HOME` to the empty string `""` to force `Pkg.build` to re-run the
 `R HOME` command, e.g. if you change your PATH:
 ```julia
 ENV["R_HOME"]=""
-ENV["PATH"]="....directory of R executable..."
 Pkg.build("RCall")
 ```
-
-When `R HOME` doesn't return a valid R library or `R_HOME` is set to `"*"`, RCall will use its own Conda installation of R.
-
 
 Should you experience problems with any of these methods, please [open an issue](https://github.com/JuliaStats/RCall.jl/issues/new).
 
 ## Standard installations
 
-If you want to install R yourself, rather than relying on the automatic Conda installation, you can use one of the following options:
+The following options have been tested and are supported:
 
 ### Windows
 The current [Windows binary from CRAN](https://cran.r-project.org/bin/windows/base/).
@@ -66,7 +52,6 @@ For some environments, you might also need to specify `LD_LIBRARY_PATH`
 ```sh
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`R RHOME`/lib"
 ```
-
 
 ## Updating R
 
