@@ -18,7 +18,6 @@ StatsModels = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
 WinReg = "1b915085-20d7-51cf-bf83-8f477d6f5128"
 
 [compat]
-AxisArrays = "≥ 0.0.6"
 CategoricalArrays = "≥ 0.3.0"
 Conda = "1.4"
 DataFrames = "≥ 0.19"
@@ -28,13 +27,3 @@ Requires = "≥ 0.5.2"
 StatsModels = "0.6"
 WinReg = "≥ 0.2.0"
 julia = "1"
-
-[extras]
-AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["Dates", "AxisArrays", "REPL", "Test", "Random"]
