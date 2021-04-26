@@ -1,5 +1,7 @@
-__precompile__()
 module RCall
+if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@optlevel"))
+    @eval Base.Experimental.@optlevel 1
+end
 
 using Requires
 using Dates
