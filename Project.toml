@@ -4,6 +4,7 @@ authors = ["Douglas Bates <dmbates@gmail.com>", "Randy Lai <randy.cs.lai@gmail.c
 version = "0.13.12"
 
 [deps]
+Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"

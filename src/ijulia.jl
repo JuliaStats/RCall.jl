@@ -34,16 +34,20 @@ function ijulia_displayfile(m::MIME"image/png", f)
         display(m,d)
     end
 end
-function ijulia_displayfile(m::MIME"image/svg+xml", f)
+
+function _fix_svg_ids(svg_str::String)
     # R svg images use named defs, which cause problem when used inline, see
     # https://github.com/jupyter/notebook/issues/333
     # we get around this by renaming the elements.
+    rand_id = randstring()
+    svg_str = replace(svg_str, "id=\"glyph" => "id=\"glyph"*rand_id)
+    replace(svg_str, "href=\"#glyph" => "href=\"#glyph"*rand_id)
+end
+
+function ijulia_displayfile(m::MIME"image/svg+xml", f)
     open(f) do f
-        r = randstring()
-        d = read(f, String)
-        d = replace(d, "id=\"glyph" => "id=\"glyph"*r)
-        d = replace(d, "href=\"#glyph" => "href=\"#glyph"*r)
-        display(m,d)
+        svg_str = read(f, String)
+        display(m, _fix_svg_ids(svg_str))
     end
 end
 
