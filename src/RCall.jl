@@ -27,7 +27,8 @@ export RObject,
    globalEnv,
    isnull, isna, anyna,
    robject, rcopy, rparse, rprint, reval, rcall, rlang,
-   rimport, @rimport, @rlibrary, @rput, @rget, @var_str, @R_str
+   rimport, @rimport, @rlibrary, @rput, @rget, @var_str, @R_str,
+   install_packages
 
 const depfile = joinpath(dirname(@__FILE__),"..","deps","deps.jl")
 if isfile(depfile)
@@ -59,6 +60,7 @@ include("macros.jl")
 include("operators.jl")
 include("RPrompt.jl")
 include("ijulia.jl")
+include("utils.jl")
 include("deprecated.jl")
 
 end # module
